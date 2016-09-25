@@ -1,6 +1,3 @@
-extern crate libc;
-
-
 use std::ptr;
 
 
