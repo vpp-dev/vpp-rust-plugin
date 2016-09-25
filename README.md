@@ -1,6 +1,7 @@
 # vpp-rust-plugin
-An experiment with making a VPP plugin in Rust.
-This is a very early stage code, and mostly for exploring this myself,
+This is an experiment with making a VPP plugin in Rust.
+
+It is a very early stage code, and mostly for exploring this myself,
 soliciting some interest in the community, and learning myself
 some Rust in the process :-)
 
@@ -10,6 +11,10 @@ feedback or a genius idea.
 Right now the code does not do a whole lot.
 
 Just says hello when called from the CLI it registers.
+
+Also, you will notice that some of the types are not exactly
+(or not at all) the same as in VPP proper - these are shortcuts,
+which may be fixed later on. Or not.
 
 # Compiling
 
