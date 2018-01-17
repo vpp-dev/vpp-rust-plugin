@@ -19,6 +19,7 @@ which may be fixed later on. Or not.
 # Compiling
 
 After installing rust (https://www.rust-lang.org/en-US/install.html),
+And the dependencies ("apt-get install llvm-3.9-dev libclang-3.9-dev clang-3.9")
 "cargo build" will build the file in target/debug/librust_plugin.so
 
 You will need to copy this file manually into the plugin directory
