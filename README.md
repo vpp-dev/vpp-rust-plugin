@@ -18,10 +18,17 @@ which may be fixed later on. Or not.
 
 # Compiling
 
+After installing rust (https://www.rust-lang.org/en-US/install.html),
 "cargo build" will build the file in target/debug/librust_plugin.so
 
 You will need to copy this file manually into the plugin directory
 of your VPP instance.
+
+Assuming the "vpp" tree is in your home directory, it will look like this:
+
+cp target/debug/librust_plugin.so ~/vpp/build-root/install-vpp_debug-native/vpp/lib64/vpp_plugins/
+
+
 
 
 

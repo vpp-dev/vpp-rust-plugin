@@ -1,8 +1,15 @@
 [package]
 name = "rust_plugin"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["Andrew Yourtchenko <ayourtch@gmail.com>"]
+
+[dependencies]
+
 
 [lib]
 name = "rust_plugin"
 crate-type = ["dylib"]
+
+[build-dependencies]
+bindgen = "*"
+
