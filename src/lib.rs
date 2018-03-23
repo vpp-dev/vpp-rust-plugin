@@ -8,6 +8,7 @@ mod vpp; /* VPP bindings */
 
 use vpp::*;
 use std::ptr;
+use std::mem::size_of;
 
 
 #[no_mangle]
@@ -24,11 +25,36 @@ pub unsafe extern "C" fn rust_test_cli(vm: *mut vlib_main_t, input: *mut unforma
   } else {
       _clib_error(CLIB_ERROR_WARNING as i32, cstr_mut!("rust-plugin"), line!() as u64, cstr_mut!("got value: %u"), val);
   }
+  let vm = test_vlib_main.unwrap();
+  let n = vlib_get_node_by_name(vm, ucstr_mut!("l2-input-classify"));
+  let edn = vlib_get_node_by_name(vm, ucstr_mut!("error-drop"));
+  let next_index = vlib_node_add_next_with_slot(vm, test_node_index as u64, (*edn).index as u64, 0);
+  let next_index = vlib_node_add_next_with_slot(vm, (*n).index as u64, test_node_index as u64, !0u64 );
+  println!("Next index is: {}", next_index);
 
   return error;
 }
 
+#[no_mangle]
+pub unsafe extern "C" fn test_node_fn (vm: *mut vlib_main_t, node: *mut vlib_node_runtime_t, frame: *mut vlib_frame_t) -> u64
+{
+  return 0;
+}
 
+#[no_mangle]
+unsafe extern "C" fn test_format_trace_fn(s: *mut u8, args: *mut va_list) -> *mut u8
+{
+  return ptr::null_mut();
+}
+
+#[no_mangle]
+unsafe extern "C" fn test_unformat_trace_fn(input: *mut unformat_input_t, args: *mut va_list) -> uword
+{
+  return 0;
+}
+
+pub static mut test_node_index: u32 = 0;
+pub static mut test_vlib_main: Option<*mut vlib_main_t> = None;
 
 #[no_mangle]
 pub extern "C" fn rust_plugin_init(vm: *mut vlib_main_t) -> *const clib_error_t {
@@ -48,11 +74,28 @@ pub extern "C" fn rust_plugin_init(vm: *mut vlib_main_t) -> *const clib_error_t 
     next_cli_command:          ptr::null_mut(),
   };
 
-  unsafe {
+  let node_index = unsafe {
     vlib_cli_register(vm, &mut cli);
-  }
+    /*
+     * the reason for this fun with flags is here:
+     * https://www.reddit.com/r/rust/comments/75pnn2/ffi_and_variable_size_data_structure/
+     */
+    let mut foo = &mut *(malloc(size_of::<_vlib_node_registration>()) as *mut _vlib_node_registration);
+    foo.function = Some(test_node_fn);
+    foo.name = cstr_mut!("a-0-test-rust-node");
+    foo.type_ = vlib_node_type_t_VLIB_NODE_TYPE_INTERNAL;
+    foo.vector_size = 4;
+    foo.format_trace = Some(test_format_trace_fn);
+    foo.unformat_trace = Some(test_unformat_trace_fn);
+    vlib_register_node(vm, foo);
+    foo.index
+  };
 
-  println!("Hello from a Rust plugin init!");
+  println!("Hello from a Rust plugin init, node index is {:?}!", node_index);
+  unsafe {
+    test_node_index = node_index;
+    test_vlib_main = Some(vm);
+  }
   return ptr::null();
 }
 
