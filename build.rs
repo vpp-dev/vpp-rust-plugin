@@ -3,6 +3,7 @@ extern crate bindgen;
 use std::env;
 use std::path::PathBuf;
 use bindgen::builder;
+use std::process::Command;
 
 
 fn main() {
@@ -30,13 +31,29 @@ fn main() {
         // Unwrap the Result and panic on failure.
         .expect("Unable to generate bindings");
 
+/*
 
+The manipulations with types above are because bindgen does not handle this
+type of C code:
+
+struct blah_t;
+
+typedef void *(blah_callback_t)(struct blah_t *param);
+
+typedef struct {
+  blah_callback_t *blah_callback;
+} blah_t;
+
+*/
 
     // Write the bindings to the $OUT_DIR/bindings.rs file.
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let out_file_name = out_path.join("bindings.rs");
     bindings
-        .write_to_file(out_path.join("bindings.rs"))
+        .write_to_file(out_file_name.clone())
         .expect("Couldn't write bindings!");
+
+    Command::new("rustup").args(&["run", "nightly", "rustfmt", out_file_name.to_str().unwrap()]).status(); // .unwrap();
 }
 
 
