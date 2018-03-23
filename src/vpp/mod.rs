@@ -8,7 +8,9 @@
 use std::fmt::{Debug, Formatter, Error};
 
 #[repr(C)]
-pub struct vnet_sw_interface_t;
+pub struct vnet_sw_interface_t {
+    pub _bindgen_opaque_blob: [u32; 10usize],
+}
 
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
