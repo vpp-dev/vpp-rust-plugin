@@ -27,7 +27,7 @@ of your VPP instance.
 
 Assuming the "vpp" tree is in your home directory, it will look like this:
 
-cp target/debug/librust_plugin.so ~/vpp/build-root/install-vpp_debug-native/vpp/lib64/vpp_plugins/
+cp target/debug/librust_plugin.so ~/vpp/build-root/install-vpp_debug-native/vpp/lib/vpp_plugins/
 
 
 
